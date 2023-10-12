@@ -1,0 +1,31 @@
+before_install:
+  - echo "hehehelhelhe"
+
+install:
+  - if [ ! -f $HOME/flutter/bin/flutter ] ; then git clone https://github.com/flutter/flutter.git -b $FLUTTER_TAG --depth 1 ; fi
+  - export PATH=`pwd`/flutter/bin:`pwd`/flutter/bin/cache/dart-sdk/bin:$PATH
+  - flutter doctor -v
+
+# Builds the iOS version using fastlane
+_build-ios: &build_ios
+  stage: Build
+  name: "Build IOS"
+  language: swift
+  os: osx
+  osx_image: xcode14.1
+  before_script:
+    - rvm install 2.7.7
+    - chmod 0600 /Users/travis/.netrc
+    - cd ios
+    - bundle install
+  script:
+    - echo "hehehe"
+
+jobs:
+  include:
+    - if: (type = push)
+      <<: *build_ios
+      env: FLAVOR=prod
+env:
+  global:
+  - FLUTTER_TAG=2.10.0
